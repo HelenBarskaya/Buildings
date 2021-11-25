@@ -10,9 +10,9 @@ import java.net.*;
 import java.util.Scanner;
 
 public class BinaryClient {
-   
+
     public static void main(String[] args) throws IOException {
-        Socket client = new Socket("192.168.0.10", 8000);
+        Socket client = new Socket("192.168.0.10", 8800);
 
         try (
                 Scanner file1 = new Scanner(new FileReader("file1.txt"));

@@ -1,22 +1,24 @@
 package com.company.buildings.net.server.sequental;
 
-import com.company.buildings.*;
-import com.company.buildings.dwelling.*;
+import com.company.buildings.Buildings;
+import com.company.buildings.dwelling.Dwelling;
 import com.company.buildings.factories.DwellingFactory;
 import com.company.buildings.factories.HotelFactory;
 import com.company.buildings.factories.OfficeFactory;
-import com.company.buildings.office.*;
+import com.company.buildings.office.OfficeBuilding;
 import com.company.exceptions.BuildingUnderArrestException;
-import com.company.interfaces.*;
+import com.company.interfaces.Building;
+import com.company.interfaces.Floor;
 
-import java.io.*;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Scanner;
 
-public class BinaryServer {
-    private static String buildingAssessment(Building building) throws BuildingUnderArrestException{
+public class SerialServer {
+    private static String buildingAssessment(Building building) throws BuildingUnderArrestException {
         try {
             if(!isArrested()) {
                 int price = 0;
@@ -40,24 +42,19 @@ public class BinaryServer {
         else return false;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        try(ServerSocket server = new ServerSocket(8800)) {
+        try(ServerSocket server = new ServerSocket(9900)) {
             System.out.println("Сервер создан!!!");
             try(Socket socket = server.accept()) {
                 System.out.println("Клиент подключен!!!");
                 try (
-                        Scanner inText = new Scanner(socket.getInputStream());
+                        InputStream inText = socket.getInputStream();
                         PrintWriter outText = new PrintWriter(socket.getOutputStream(), true);
                 ) {
-                    while(inText.hasNextLine()) {
-                        String type= inText.nextLine();
-                        System.out.println("Получен тип: " + type);
-                        if (type.contains("OfficeBuilding")) Buildings.setBuildingFactory(new OfficeFactory());
-                        else if (type.contains("Dwelling")) Buildings.setBuildingFactory(new DwellingFactory());
-                        else Buildings.setBuildingFactory(new HotelFactory());
-                        Building building = Buildings.readBuilding(inText);
-                        System.out.println("Создан объект: ");
+                    while(socket.isConnected()) {
+                        Building building = Buildings.deserializeBuilding(inText);
+                        System.out.println("Получен объект: ");
                         System.out.println(building.toString());
                         try {
                             String price = buildingAssessment(building);
@@ -67,13 +64,9 @@ public class BinaryServer {
                         {
                             outText.println(exception.printMessage());
                         }
-                        finally {
-                            System.out.println(inText.nextLine());
-                        }
-
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    socket.close();
                 }
             }
         }
