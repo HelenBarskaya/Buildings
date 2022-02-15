@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class SerialClient {
     public static void main(String[] args) throws IOException {
-        Socket client = new Socket("192.168.0.10", 9900);
+        Socket client = new Socket("localhost", 9900);
 
         try (
                 Scanner file1 = new Scanner(new FileReader("file1.txt"));

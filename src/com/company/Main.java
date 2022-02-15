@@ -1,15 +1,10 @@
 package com.company;
 
-import com.company.buildings.*;
-import com.company.buildings.factories.OfficeFactory;
-import com.company.buildings.office.*;
-import com.company.buildings.dwelling.*;
-import com.company.buildings.threads.*;
 import com.company.exceptions.*;
-import com.company.interfaces.*;
+import com.company.graphicalInterface.MainFrame;
 
+import javax.swing.*;
 import java.io.*;
-import java.util.Scanner;
 
 public class Main {
 
@@ -240,7 +235,7 @@ public class Main {
         Repairer repairerThread = new Repairer(floor);
         Cleaner cleanerThread = new Cleaner(floor);
         repairerThread.start();
-        cleanerThread.start();*/
+        cleanerThread.start();
 
         Floor floor = Buildings.createFloor(10);
         MySemaphore semaphore= new MySemaphore();
@@ -249,6 +244,7 @@ public class Main {
         Runnable r2 = new SequentalCleaner(floor, semaphore);
         Thread t2 = new Thread(r2);
         t1.start();
-        t2.start();
+        t2.start();*/
+
     }
 }
